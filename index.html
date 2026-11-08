@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <title>Ultimate Tic-Tac-Toe</title>
+<meta name="theme-color" content="#05050D">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ultimate">
 <style>
   :root{
     --bg: #05050D;
@@ -105,7 +111,7 @@
     padding: 12px 14px;
   }
   .setting-group{ display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; }
-  .setting-group.names{ flex:1 1 220px; flex-wrap:nowrap; min-width: 200px; }
+  .setting-group.names{ flex:0 1 250px; flex-wrap:nowrap; min-width: 0; }
   .setting-group.names label{ flex:1 1 0; min-width:0; }
   .setting-group label{
     display:flex; flex-direction:column; gap:4px;
@@ -123,7 +129,7 @@
     min-width:0;
   }
   .setting-group input{ width:100%; max-width:150px; min-width:0; }
-  .setting-group.names input{ max-width:none; }
+  .setting-group.names input{ max-width:120px; }
   .icon-btn{
     border:1px solid var(--line-strong);
     background:var(--panel-soft);
@@ -296,12 +302,47 @@
 
   #confettiCanvas{ position:fixed; inset:0; pointer-events:none; z-index:60; display:none; }
 
-  @media (max-width: 420px){
-    .settings-panel{ flex-direction:column; align-items:stretch; }
-    .setting-group{ justify-content:space-between; }
-    .setting-group input{ max-width:none; }
+  @media (max-width: 520px){
+    body{ padding: 12px 10px 24px; }
+    .wrap{ gap: 10px; }
+    .settings-panel{ padding: 10px 12px; gap: 8px 10px; justify-content:center; }
+    .setting-group.names{ flex:1 1 0; min-width:0; }
+    .setting-group.names input{ max-width:none; }
+    .settings-panel > .setting-group:last-child{ order:1; gap:6px; }
+    .settings-panel > .setting-group:nth-child(2){ order:2; flex:1 1 100%; justify-content:center; }
     .score-value{ font-size:1.15rem; }
+    .score-cell{ padding: 6px; }
   }
+  @media (orientation: landscape) and (max-height: 520px){
+    body{ padding: 10px 14px; }
+    body .wrap{ max-width: 1200px; display:grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px 22px; align-items:start; justify-content:center; }
+    .wrap > *{ grid-column: 2; justify-self: center; }
+    .wrap > .settings-panel, .wrap > .scoreboard{ justify-self: stretch; }
+    .meta-board{ grid-column: 1; grid-row: 1 / span 9; width: min(calc(100dvh - 20px), calc(100vw - 340px)); position: sticky; top: 10px; }
+  }
+  @media (orientation: landscape) and (max-height: 520px){
+    .wrap{ gap: 6px 18px; }
+    .settings-panel{ padding: 8px 10px; gap: 6px 10px; }
+    .setting-group.names{ flex: 1 1 100%; }
+    .setting-group.names input{ max-width:none; }
+    .score-cell{ padding: 5px; } .score-value{ font-size: 1.05rem; }
+    .turn-indicator{ padding: 5px 14px; }
+    button.reset{ padding: 7px 12px; }
+  }
+  @media (orientation: landscape) and (min-height: 521px){
+    .meta-board{ width: min(100%, max(360px, calc(100dvh - 222px))); }
+  }
+  .net-card{ max-width: 360px; width: 100%; align-items:stretch; }
+  .net-card .banner-title{ text-align:center; }
+  .net-l{ display:flex; flex-direction:column; gap:4px; color:var(--ink-soft); font-size:0.7rem; letter-spacing:0.06em; text-transform:uppercase; font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace; }
+  .net-card input{ background:var(--panel-soft); border:1px solid var(--line-strong); color:var(--ink); border-radius:8px; padding:10px; font-size:1rem; font-family:inherit; min-width:0; }
+  .net-or{ text-align:center; color:var(--ink-soft); font-size:0.8rem; }
+  .net-row{ display:flex; gap:8px; }
+  .net-row input{ flex:1; text-align:center; font-weight:800; letter-spacing:0.15em; text-transform:uppercase; }
+  #netBig{ text-align:center; font-size:clamp(2.6rem,14vw,3.6rem); font-weight:800; letter-spacing:0.12em; color:var(--x-color); text-shadow:0 0 16px var(--x-glow); }
+  #netBig:empty{ display:none; }
+  #netStatus{ text-align:center; font-size:0.85rem; color:var(--ink-soft); min-height:1.2em; overflow-wrap:anywhere; }
+  .net-card .reset{ padding:11px 16px; font-size:0.85rem; }
   @media (min-width: 700px){
     .wrap{ max-width: 640px; }
     .meta-board{ padding:10px; }
@@ -319,8 +360,8 @@
 
   <div class="settings-panel">
     <div class="setting-group names">
-      <label>Jugador X <input id="nameX" type="text" maxlength="14" value="Jugador X"></label>
-      <label id="nameOWrap">Jugador O <input id="nameO" type="text" maxlength="14" value="Jugador O"></label>
+      <label><input id="nameX" type="text" maxlength="14" value="Jugador X" placeholder="Jugador X" aria-label="Nombre del jugador X"></label>
+      <label id="nameOWrap"><input id="nameO" type="text" maxlength="14" value="Jugador O" placeholder="Jugador O" aria-label="Nombre del jugador O"></label>
     </div>
     <div class="setting-group">
       <label>Modo
@@ -330,6 +371,12 @@
         <select id="difficultySelect">
           <option value="easy">Fácil</option>
           <option value="hard" selected>Difícil</option>
+        </select>
+      </label>
+      <label id="whereWrap">Juego
+        <select id="whereSelect">
+          <option value="local">Local</option>
+          <option value="online">Online</option>
         </select>
       </label>
       <label>Match
@@ -345,6 +392,15 @@
       <button class="icon-btn" id="muteToggle" type="button" aria-label="Silenciar sonido" title="Silenciar sonido">🔊</button>
     </div>
   </div>
+
+  <div class="turn-indicator" id="turnIndicator">
+    <span class="mark" id="turnMark">X</span>
+    <span id="turnText">Turno del jugador X</span>
+  </div>
+
+  <div class="meta-board" id="metaBoard"></div>
+
+  <div class="hint" id="hint" aria-live="polite"></div>
 
   <div class="scoreboard">
     <div class="score-cell x">
@@ -362,15 +418,6 @@
   </div>
 
   <div class="round-info" id="roundInfo"></div>
-
-  <div class="turn-indicator" id="turnIndicator">
-    <span class="mark" id="turnMark">X</span>
-    <span id="turnText">Turno del jugador X</span>
-  </div>
-
-  <div class="meta-board" id="metaBoard"></div>
-
-  <div class="hint" id="hint" aria-live="polite"></div>
 
   <div class="controls">
     <button class="reset" id="resetRoundBtn" type="button">Reiniciar ronda</button>
@@ -390,6 +437,19 @@
   <div class="banner-card">
     <div class="banner-title" id="matchBannerText"></div>
     <button class="reset primary" id="startNewMatchBtn" type="button">Jugar otro match</button>
+  </div>
+</div>
+
+<div class="info-banner" id="netBanner" hidden>
+  <div class="banner-card net-card" role="dialog" aria-modal="true" aria-label="Partida online">
+    <div class="banner-title">Partida online</div>
+    <label class="net-l">Tu nombre <input id="myName" type="text" maxlength="14" placeholder="Tu nombre"></label>
+    <button class="reset primary" id="netCreate" type="button">Crear partida</button>
+    <div class="net-or">o únete con el código de tu rival</div>
+    <div class="net-row"><input id="netCode" type="text" maxlength="4" placeholder="K7P2" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Código de la partida"><button class="reset" id="netJoin" type="button">Unirse</button></div>
+    <div id="netBig"></div>
+    <div id="netStatus" aria-live="polite"></div>
+    <button class="reset" id="netCancel" type="button">Cancelar</button>
   </div>
 </div>
 
@@ -462,8 +522,16 @@
     nameO: 'Jugador O',
     matchLength: 3,
     theme: 'dark',
-    muted: false
+    muted: false,
+    where: 'local',
+    myName: ''
   };
+  try{ Object.assign(settings, JSON.parse(localStorage.getItem('uttt') || '{}')); }catch(e){}
+  settings.where = 'local';
+  function saveSettings(){ try{ localStorage.setItem('uttt', JSON.stringify(settings)); }catch(e){} }
+  let aiTimer = null;
+  let NET = null;
+  function stopAi(){ clearTimeout(aiTimer); aiTimer = null; aiThinking = false; }
   let match = createMatch();
   let game = createGame('X');
   let roundPending = false;
@@ -485,6 +553,7 @@
   }
 
   function playerLabel(p){
+    if(NET && NET.names) return NET.names[p] || ('Jugador ' + p);
     if(p === 'X') return settings.nameX.trim() || 'Jugador X';
     if(p === 'O') return settings.nameO.trim() || (settings.mode === 'ai' ? 'IA' : 'Jugador O');
     return '';
@@ -677,10 +746,12 @@
   function handleCellClick(s, c){
     if(aiThinking || roundPending || match.matchWinner || game.winner) return;
     if(settings.mode === 'ai' && game.currentPlayer === 'O') return;
+    if(NET && (!NET.on || game.currentPlayer !== NET.me)) return;
     if(game.boards[s][c]) return;
 
     const invalidBoard = (game.activeSubBoard !== null && game.activeSubBoard !== s) || !!game.subWinners[s];
     if(invalidBoard){ triggerShake(s); soundBlocked(); return; }
+    if(NET) nsend({ t:'mv', s, c, r: match.roundNumber });
 
     doMove(s, c);
   }
@@ -699,7 +770,10 @@
     render();
     if(settings.mode === 'ai' && game.currentPlayer === 'O'){
       aiThinking = true; render();
-      setTimeout(() => {
+      const g0 = game;
+      aiTimer = setTimeout(() => {
+        aiTimer = null;
+        if(game !== g0) return;
         const mv = chooseAiMove(game);
         aiThinking = false;
         if(mv) doMove(mv.sub, mv.cell); else render();
@@ -735,7 +809,10 @@
   function maybeTriggerAiStart(){
     if(settings.mode === 'ai' && game.currentPlayer === 'O' && !game.winner){
       aiThinking = true; render();
-      setTimeout(() => {
+      const g0 = game;
+      aiTimer = setTimeout(() => {
+        aiTimer = null;
+        if(game !== g0) return;
         const mv = chooseAiMove(game);
         aiThinking = false;
         if(mv) doMove(mv.sub, mv.cell); else render();
@@ -744,6 +821,7 @@
   }
 
   function startNewRound(){
+    stopAi();
     match.roundNumber++;
     const starting = (match.roundNumber % 2 === 1) ? 'X' : 'O';
     game = createGame(starting);
@@ -754,6 +832,7 @@
   }
 
   function resetRound(){
+    stopAi();
     const starting = (match.roundNumber % 2 === 1) ? 'X' : 'O';
     game = createGame(starting);
     roundPending = false;
@@ -763,6 +842,7 @@
   }
 
   function newMatch(){
+    stopAi();
     match = createMatch();
     game = createGame('X');
     roundPending = false;
@@ -827,8 +907,8 @@
     } else {
       turnIndicator.classList.add(game.currentPlayer === 'X' ? 'turn-x' : 'turn-o');
       turnMark.textContent = game.currentPlayer;
-      turnText.textContent = `Turno de ${playerLabel(game.currentPlayer)}`;
-      hint.textContent = game.activeSubBoard === null
+      turnText.textContent = NET && game.currentPlayer === NET.me ? 'Tu turno' : `Turno de ${playerLabel(game.currentPlayer)}`;
+      hint.textContent = NET && !NET.on ? 'Tu rival se ha desconectado.' : game.activeSubBoard === null
         ? 'Puedes jugar en cualquier sub-tablero libre.'
         : `Debes jugar en el sub-tablero resaltado (${game.activeSubBoard + 1} de 9).`;
     }
@@ -845,16 +925,22 @@
   }
 
   // ---------- Event wiring ----------
-  nameXInput.addEventListener('input', e => { settings.nameX = e.target.value; render(); });
-  nameOInput.addEventListener('input', e => { settings.nameO = e.target.value; render(); });
+  nameXInput.addEventListener('input', e => { settings.nameX = e.target.value; saveSettings(); render(); });
+  nameOInput.addEventListener('input', e => { settings.nameO = e.target.value; saveSettings(); render(); });
 
   function updateModeUI(){
     modeToggle.textContent = settings.mode === 'ai' ? '🧑 vs 🤖' : '🧑 vs 🧑';
     modeToggle.title = settings.mode === 'ai' ? 'Modo: Vs IA (pulsa para 2 jugadores)' : 'Modo: 2 jugadores (pulsa para Vs IA)';
     difficultyWrap.style.display = settings.mode === 'ai' ? 'flex' : 'none';
+    whereWrap.style.display = settings.mode === 'ai' ? 'none' : 'flex';
+    whereSelect.value = NET ? 'online' : 'local';
+    const on = !!(NET && NET.on);
+    nameXInput.disabled = nameOInput.disabled = matchLengthSelect.disabled = on;
+    if(on){ nameXInput.value = NET.names.X; nameOInput.value = NET.names.O; }
   }
 
   modeToggle.addEventListener('click', () => {
+    if(NET) nleave(true);
     settings.mode = settings.mode === 'ai' ? 'pvp' : 'ai';
     updateModeUI();
     if(settings.mode === 'ai' && (!settings.nameO.trim() || settings.nameO === 'Jugador O')){
@@ -863,11 +949,13 @@
     if(settings.mode === 'pvp' && settings.nameO === 'IA'){
       settings.nameO = 'Jugador O'; nameOInput.value = 'Jugador O';
     }
+    saveSettings();
     newMatch();
   });
-  difficultySelect.addEventListener('change', e => { settings.aiDifficulty = e.target.value; });
+  difficultySelect.addEventListener('change', e => { settings.aiDifficulty = e.target.value; saveSettings(); });
   matchLengthSelect.addEventListener('change', e => {
     settings.matchLength = parseInt(e.target.value, 10);
+    saveSettings();
     newMatch();
   });
 
@@ -875,23 +963,141 @@
     settings.theme = settings.theme === 'dark' ? 'light' : 'dark';
     document.documentElement.dataset.theme = settings.theme;
     themeToggle.textContent = settings.theme === 'dark' ? '🌙' : '☀️';
+    saveSettings();
   });
   muteToggle.addEventListener('click', () => {
     settings.muted = !settings.muted;
     muteToggle.textContent = settings.muted ? '🔇' : '🔊';
     if(!settings.muted) ensureAudio();
+    saveSettings();
   });
 
-  resetRoundBtn.addEventListener('click', resetRound);
-  newMatchBtn.addEventListener('click', newMatch);
+  resetRoundBtn.addEventListener('click', () => { if(NET){ if(!NET.on) return; nsend({ t:'reset' }); } resetRound(); });
+  newMatchBtn.addEventListener('click', () => { if(NET){ if(!NET.on) return; nsend({ t:'newmatch' }); } newMatch(); });
   infoToggle.addEventListener('click', () => { infoBanner.hidden = false; });
   closeInfoBtn.addEventListener('click', () => { infoBanner.hidden = true; });
   infoBanner.addEventListener('click', e => { if(e.target === infoBanner) infoBanner.hidden = true; });
-  nextRoundBtn.addEventListener('click', startNewRound);
-  startNewMatchBtn.addEventListener('click', newMatch);
+  nextRoundBtn.addEventListener('click', () => { if(NET && NET.on) nsend({ t:'next', r: match.roundNumber + 1 }); startNewRound(); });
+  startNewMatchBtn.addEventListener('click', () => { if(NET && NET.on) nsend({ t:'newmatch' }); newMatch(); });
+
+  // ---------- Partida online (PeerJS): cada jugador en su dispositivo ----------
+  const AB = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const PJ = 'https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js';
+  const netBanner = document.getElementById('netBanner');
+  const myNameInput = document.getElementById('myName');
+  const netCode = document.getElementById('netCode');
+  const netBig = document.getElementById('netBig');
+  const netStatus = document.getElementById('netStatus');
+  const netCreate = document.getElementById('netCreate');
+  const netJoin = document.getElementById('netJoin');
+  const loadPJ = () => window.Peer ? Promise.resolve() : new Promise((ok, ko) => { const e = document.createElement('script'); e.src = PJ; e.onload = ok; e.onerror = ko; document.head.appendChild(e); });
+  const nst = t => { netStatus.textContent = t; };
+  const busy = b => { netCreate.disabled = netJoin.disabled = b; };
+  function nsend(o){ try{ if(NET && NET.c && NET.on) NET.c.send(o); }catch(e){} }
+  function myName(){ return (myNameInput.value || '').trim() || null; }
+  function openNet(code){
+    nleave(false); busy(false); netBig.textContent = ''; nst('');
+    myNameInput.value = settings.myName || '';
+    netCode.value = code || '';
+    netBanner.hidden = false;
+    if(code) njoin(code);
+  }
+  function nleave(toLocal){
+    if(NET){ nsend({ t:'bye' }); try{ NET.c && NET.c.close(); NET.peer && NET.peer.destroy(); }catch(e){} clearTimeout(NET.to); NET = null; }
+    if(toLocal){ netBanner.hidden = true; updateModeUI(); }
+  }
+  function nstart(){
+    netBanner.hidden = true;
+    updateModeUI();
+    newMatch();
+  }
+  function nwire(c){
+    NET.c = c;
+    c.on('data', d => {
+      if(!NET || !d) return;
+      if(d.t === 'cfg'){
+        NET.on = true; clearTimeout(NET.to);
+        settings.matchLength = d.len; matchLengthSelect.value = String(d.len);
+        NET.names = { X: d.name || 'Jugador X', O: myName() || 'Jugador O' };
+        nsend({ t:'name', name: NET.names.O });
+        nstart();
+      }
+      else if(d.t === 'name'){ NET.names.O = d.name || 'Jugador O'; updateModeUI(); render(); }
+      else if(d.t === 'mv'){
+        if(d.r !== match.roundNumber || game.winner || roundPending || game.currentPlayer === NET.me) return;
+        if(legalMoves(game).some(m => m.sub === d.s && m.cell === d.c)) doMove(d.s, d.c);
+      }
+      else if(d.t === 'next'){ if(d.r > match.roundNumber) startNewRound(); }
+      else if(d.t === 'reset') resetRound();
+      else if(d.t === 'newmatch') newMatch();
+      else if(d.t === 'bye'){ NET.on = false; updateModeUI(); render(); }
+    });
+    c.on('close', () => { if(NET && NET.c === c){ const was = NET.on; NET.on = false; if(was){ updateModeUI(); render(); } else nst('Se perdió la conexión.'); } });
+  }
+  async function ncreate(){
+    nleave(false); busy(true);
+    settings.myName = myName() || ''; saveSettings();
+    const code = [0,0,0,0].map(() => AB[Math.random() * 32 | 0]).join('');
+    NET = { code, me:'X', on:false, names:null }; const me = NET;
+    netBig.textContent = code; nst('Conectando…');
+    try{
+      await loadPJ(); if(NET !== me) return;
+      NET.peer = new Peer('uttt-' + code);
+      NET.peer.on('open', () => { if(NET === me) nst('Eres la X. Tu rival: 🧑 vs 🧑 → Juego: Online → escribe ' + code + ' → «Unirse». Esperando…' + (location.protocol.startsWith('http') ? ' Enlace: ' + location.href.split('#')[0] + '#' + code : '')); });
+      NET.peer.on('connection', c => {
+        if(NET !== me || NET.c){ c.on('open', () => c.close()); return; }
+        nwire(c);
+        c.on('open', () => {
+          NET.on = true;
+          NET.names = { X: myName() || 'Jugador X', O: 'Jugador O' };
+          c.send({ t:'cfg', len: settings.matchLength, name: NET.names.X });
+          nstart();
+        });
+      });
+      NET.peer.on('error', e => { if(NET === me && !NET.on){ nst(e.type === 'unavailable-id' ? 'Ese código está ocupado: pulsa otra vez «Crear partida».' : 'No hay conexión a internet. El juego online necesita internet.'); netBig.textContent = ''; busy(false); NET = null; } });
+    }catch(e){ nst('No hay conexión a internet. El juego online necesita internet.'); busy(false); NET = null; }
+  }
+  async function njoin(v){
+    const code = (v || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if(code.length !== 4 || [...code].some(x => AB.indexOf(x) < 0)){ nst('El código son 4 letras o números, por ejemplo K7P2.'); return; }
+    nleave(false); busy(true); netBig.textContent = '';
+    settings.myName = myName() || ''; saveSettings();
+    nst('Buscando la partida ' + code + '…');
+    NET = { code, me:'O', on:false, names:null }; const me = NET;
+    const fail = t => { if(NET !== me || NET.on) return; nst(t); busy(false); nleave(false); };
+    NET.to = setTimeout(() => fail('No encuentro esa partida: revisa el código y que tu rival la tenga abierta.'), 12000);
+    try{
+      await loadPJ(); if(NET !== me) return;
+      NET.peer = new Peer();
+      NET.peer.on('open', () => { if(NET !== me) return; const c = NET.peer.connect('uttt-' + code, { reliable:true }); nwire(c); c.on('open', () => { if(NET === me) nst('¡Conectado! Empezando…'); }); });
+      NET.peer.on('error', e => fail(e.type === 'peer-unavailable' ? 'No encuentro esa partida: revisa el código y que tu rival la tenga abierta.' : 'No hay conexión a internet. El juego online necesita internet.'));
+    }catch(e){ fail('No hay conexión a internet. El juego online necesita internet.'); }
+  }
+  const whereWrap = document.getElementById('whereWrap');
+  const whereSelect = document.getElementById('whereSelect');
+  whereSelect.addEventListener('change', e => {
+    if(e.target.value === 'online') openNet();
+    else { nleave(true); newMatch(); }
+  });
+  netCreate.addEventListener('click', ncreate);
+  netJoin.addEventListener('click', () => njoin(netCode.value));
+  netCode.addEventListener('keydown', e => { if(e.key === 'Enter') netJoin.click(); });
+  document.getElementById('netCancel').addEventListener('click', () => { nleave(true); });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape'){ if(!netBanner.hidden && !(NET && NET.on)) nleave(true); else if(!infoBanner.hidden) infoBanner.hidden = true; } });
+
+  // ---------- Ajustes guardados ----------
+  document.documentElement.dataset.theme = settings.theme;
+  themeToggle.textContent = settings.theme === 'dark' ? '🌙' : '☀️';
+  muteToggle.textContent = settings.muted ? '🔇' : '🔊';
+  nameXInput.value = settings.nameX; nameOInput.value = settings.nameO;
+  difficultySelect.value = settings.aiDifficulty;
+  matchLengthSelect.value = String(settings.matchLength);
+  match = createMatch();
 
   updateModeUI();
   render();
+  if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+  { const h = location.hash.slice(1); if(/^[A-Za-z0-9]{4}$/.test(h)){ settings.mode = 'pvp'; updateModeUI(); openNet(h.toUpperCase()); } }
 })();
 </script>
 </body>
